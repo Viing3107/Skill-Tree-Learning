@@ -73,4 +73,4 @@ Dự án này được thiết kế để dễ dàng triển khai trên:
 - **Frontend**: Vercel hoặc Netlify.
 
 ---
-*Phát triển bởi [Tên của bạn]*
+*Phát triển bởi Đỗ Quang Vinh*

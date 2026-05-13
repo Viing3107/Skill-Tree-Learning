@@ -95,7 +95,7 @@ async function generateTree() {
   isLoading.value = true
   
   try {
-    const response = await fetch('http://localhost:8000/generate-skill-tree', {
+    const response = await fetch(`${API_URL}/generate-skill-tree`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ subject: subject.value })
