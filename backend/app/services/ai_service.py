@@ -15,58 +15,88 @@ api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
 def generate_skill_tree(subject: str):
-    # Dùng thẳng model ổn định nhất, không gọi list_models() để tránh bị Google check vùng
-    model_name = "gemini-1.5-flash"
+    # Danh sách model ĐẶC BIỆT dựa trên Key của bạn
+    models_to_try = [
+        "models/gemini-2.0-flash", 
+        "models/gemini-flash-latest", 
+        "models/gemini-pro-latest",
+        "models/gemini-2.0-flash-lite",
+        "models/gemma-4-31b-it",
+        "models/gemini-3.1-flash-lite",
+        "models/gemini-3-pro-preview"
+    ]
     
-    try:
-        print(f"Đang gọi AI (Gemini 1.5 Flash) cho chủ đề: {subject}")
-        model = genai.GenerativeModel(model_name)
-        
-        prompt = f"""
-        Vai trò: Bạn là một Chuyên gia Thiết kế Chương trình Giảng dạy và Chuyên gia về {subject}.
-        Nhiệm vụ: Tạo một Skill Tree chi tiết cho chủ đề: {subject}.
+    for model_name in models_to_try:
+        try:
+            print(f"Đang thử AI với model: {model_name}...")
+            model = genai.GenerativeModel(model_name)
+            
+            prompt = f"""
+            Vai trò: Bạn là một Chuyên gia Thiết kế Chương trình Giảng dạy (Curriculum Architect) và Chuyên gia về {subject}. Nhiệm vụ của bạn là xây dựng một bản đồ lộ trình học tập (Learning Path) logic, có chiều sâu và khả thi cho người mới bắt đầu đến khi đạt mức độ chuyên sâu.
 
-        Yêu cầu:
-            1. Cấu trúc: 6 đến 10 nodes, chia thành 3 giai đoạn: Cơ bản, Trung cấp, Nâng cao.
-            2. Chi tiết từng Node: title, description (20-30 từ), difficulty, estimated_hours.
-            3. Ràng buộc: CHỈ trả về mã JSON hợp lệ, Tiếng Việt.
+            Nhiệm vụ: Hãy tạo một Skill Tree chi tiết cho chủ đề: {subject}.
 
-        Định dạng JSON:
-        {{
-          "nodes": [
+            Yêu cầu:
+                1. Cấu trúc nội dung:
+                    - Số lượng node: Từ 6 đến 10 nodes.
+                    - Phân cấp: Chia lộ trình thành 3 giai đoạn: Cơ bản (Foundational), Trung cấp (Intermediate), và Nâng cao (Advanced/Specialized).
+                    - Tính logic: Node sau phải kế thừa kiến thức từ node trước (dựa trên mảng prerequisites).
+
+                2. Chi tiết từng Node:
+                    - title: Tên chủ đề ngắn gọn, chuyên nghiệp.
+                    - description: Mô tả từ 20-30 từ, nêu rõ người học sẽ làm được gì sau khi hoàn thành node này.
+                    - difficulty: Mức độ khó (Beginner, Intermediate, Advanced).
+                    - estimated_hours: Thời gian ước tính để nắm vững (số nguyên).
+
+                3. Ràng buộc kỹ thuật:
+                    - CHỈ trả về mã JSON hợp lệ (Valid JSON). Không thêm lời dẫn, không giải thích thêm, không sử dụng Markdown code blocks (json ... ).
+                    - Đảm bảo không có dấu phẩy thừa ở cuối phần tử cuối cùng (tránh lỗi parse JSON).
+                    - Ngôn ngữ: Tiếng Việt (Trừ khi yêu cầu Tiếng Anh, hoặc {subject} là chuyên ngành kỹ thuật).
+
+            Định dạng JSON:
             {{
-              "id": "1",
-              "title": "Tên chủ đề",
-              "description": "Mô tả ngắn",
-              "prerequisites": []
-            }},
-            {{
-              "id": "2",
-              "title": "Chủ đề tiếp theo",
-              "description": "Mô tả ngắn",
-              "prerequisites": ["1"]
-            }}
-          ]
-        }}
-        """
-
-        response = model.generate_content(prompt)
-        text = response.text.strip()
-        
-        if "```json" in text:
-            text = text.split("```json")[1].split("```")[0].strip()
-        elif "```" in text:
-            text = text.split("```")[1].split("```")[0].strip()
-
-        return json.loads(text)
-
-    except Exception as e:
-        print(f"LỖI TẠI RENDER: {str(e)}")
-        # Trả về dữ liệu mẫu nếu bị Google chặn vùng
-        return {
             "nodes": [
-                {"id": "1", "title": f"Nhập môn {subject}", "description": "Lỗi vùng địa lý Google Gemini trên Render. Đang dùng dữ liệu tạm.", "prerequisites": []},
-                {"id": "2", "title": "Kiến thức cơ bản", "description": "Vui lòng thử đổi Region trên Render sang Singapore.", "prerequisites": ["1"]},
-                {"id": "3", "title": "Kỹ năng thực chiến", "description": "Hoặc thử lại sau ít phút.", "prerequisites": ["2"]}
+                {{
+                "id": "1",
+                "title": "Topic name",
+                "description": "Short description",
+                "prerequisites": []
+                }},
+                {{
+                "id": "2",
+                "title": "Next Topic",
+                "description": "Short description",
+                "prerequisites": ["1"]
+                }}
             ]
-        }
+            }}
+            """
+
+            response = model.generate_content(prompt)
+            
+            # Kiểm tra xem response có hợp lệ không
+            if not response or not response.text:
+                continue
+                
+            text = response.text.strip()
+            
+            # Làm sạch JSON
+            if "```json" in text:
+                text = text.split("```json")[1].split("```")[0].strip()
+            elif "```" in text:
+                text = text.split("```")[1].split("```")[0].strip()
+
+            print(f"--- THÀNH CÔNG VỚI MODEL: {model_name} ---")
+            return json.loads(text)
+
+        except Exception as e:
+            print(f"Lỗi với {model_name}: {str(e)}")
+            continue
+
+    # Fallback cuối cùng
+    return {
+        "nodes": [
+            {"id": "1", "title": f"Nhập môn {subject}", "description": "Kiến thức cơ bản.", "prerequisites": []},
+            {"id": "2", "title": "Kỹ năng thực hành", "description": "Làm chủ kiến thức.", "prerequisites": ["1"]}
+        ]
+    }
