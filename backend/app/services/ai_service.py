@@ -17,13 +17,17 @@ genai.configure(api_key=api_key)
 def generate_skill_tree(subject: str):
     # Danh sách model ĐẶC BIỆT dựa trên Key của bạn
     models_to_try = [
+        "models/gemini-2.5-flash",
+        "models/gemini-2.5-pro",
         "models/gemini-2.0-flash", 
-        "models/gemini-flash-latest", 
-        "models/gemini-pro-latest",
+        "models/gemini-2.0-flash-001",
         "models/gemini-2.0-flash-lite",
+        "models/gemini-flash-latest", 
+        "models/gemini-flash-lite-latest",
+        "models/gemini-pro-latest",
+        "models/gemini-2.5-flash-lite",
         "models/gemma-4-31b-it",
-        "models/gemini-3.1-flash-lite",
-        "models/gemini-3-pro-preview"
+        "models/gemini-3.1-flash-lite"
     ]
     
     for model_name in models_to_try:
@@ -90,7 +94,7 @@ def generate_skill_tree(subject: str):
             return json.loads(text)
 
         except Exception as e:
-            print(f"Lỗi với {model_name}: {str(e)}")
+            print(f"Lỗi với {model_name}")
             continue
 
     # Fallback cuối cùng
