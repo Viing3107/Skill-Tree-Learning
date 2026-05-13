@@ -1,0 +1,71 @@
+:root {
+  --bg-dark: #0a0a0f;
+  --bg-panel: #11111d;
+  --neon-cyan: #00f2ff;
+  --neon-green: #39ff14;
+  --neon-purple: #bc13fe;
+  --text-main: #e2e8f0;
+  --text-dim: #94a3b8;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  overflow: hidden;
+}
+
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: #2d2d3a;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3d3d4a;
+}
+
+/* Vue Flow Overrides */
+.vue-flow__background {
+  background-color: var(--bg-dark);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.vue-flow__edge-path {
+  stroke: rgba(255, 255, 255, 0.15);
+  stroke-width: 3;
+  transition: stroke 0.3s;
+}
+
+.vue-flow__edge.selected .vue-flow__edge-path {
+  stroke: var(--neon-cyan);
+  filter: drop-shadow(0 0 5px var(--neon-cyan));
+}
+
+/* Animations */
+@keyframes pulse-neon {
+  0% { box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); }
+  50% { box-shadow: 0 0 25px rgba(0, 242, 255, 0.5); }
+  100% { box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); }
+}
+
+@keyframes slide-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.available {
+  animation: pulse-neon 2s infinite ease-in-out;
+}
