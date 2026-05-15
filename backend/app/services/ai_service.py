@@ -24,16 +24,13 @@ list_models = [
     "models/gemini-flash-latest",
     "models/gemini-flash-lite-latest",
     "models/gemini-pro-latest",
-    "models/gemini-2.5-flash-lite",
-    "models/gemini-2.5-flash-image",
-    "models/gemini-3.1-flash-lite",
-    "models/gemini-2.5-flash-native-audio-latest"
+    "models/gemini-2.5-flash-lite"
 ]
 
 def generate_skill_tree(subject: str):
     for model_name in list_models:
         try:
-            print(f"Trying AI with model: {model_name}...")
+            print(f"Đang thử với model AI: {model_name}...")
             model = genai.GenerativeModel(model_name)
             
             prompt = f"""
@@ -91,11 +88,11 @@ def generate_skill_tree(subject: str):
             elif "```" in text:
                 text = text.split("```")[1].split("```")[0].strip()
 
-            print(f"--- SUCCESS WITH MODEL: {model_name} ---")
+            print(f"Thành công với model: {model_name}")
             return json.loads(text)
 
         except Exception as e:
-            print(f"Error with {model_name}: {e}")
+            print(f"Lỗi với model {model_name}: {e}")
             continue
 
     # Fallback cuối cùng
