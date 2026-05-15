@@ -14,23 +14,13 @@ else:
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
+list_models = genai.list_models()
+
 def generate_skill_tree(subject: str):
-    # Danh sách model ĐẶC BIỆT dựa trên Key của bạn
-    models_to_try = [
-        "models/gemini-2.5-flash",
-        "models/gemini-2.5-pro",
-        "models/gemini-2.0-flash", 
-        "models/gemini-2.0-flash-001",
-        "models/gemini-2.0-flash-lite",
-        "models/gemini-flash-latest", 
-        "models/gemini-flash-lite-latest",
-        "models/gemini-pro-latest",
-        "models/gemini-2.5-flash-lite",
-        "models/gemma-4-31b-it",
-        "models/gemini-3.1-flash-lite"
-    ]
-    
-    for model_name in models_to_try:
+    for model in list_models:
+        model_name = model.name
+        if "flash" not in model_name and "pro" not in model_name and "gemini" not in model_name:
+            continue
         try:
             print(f"Đang thử AI với model: {model_name}...")
             model = genai.GenerativeModel(model_name)
@@ -42,7 +32,7 @@ def generate_skill_tree(subject: str):
 
             Yêu cầu:
                 1. Cấu trúc nội dung:
-                    - Số lượng node: Từ 6 đến 10 nodes.
+                    - Số lượng node: Từ 6 đến 14 nodes.
                     - Phân cấp: Chia lộ trình thành 3 giai đoạn: Cơ bản (Foundational), Trung cấp (Intermediate), và Nâng cao (Advanced/Specialized).
                     - Tính logic: Node sau phải kế thừa kiến thức từ node trước (dựa trên mảng prerequisites).
 
