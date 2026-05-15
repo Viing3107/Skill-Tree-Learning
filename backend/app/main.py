@@ -13,7 +13,7 @@ app = FastAPI()
 # Cho phép frontend gọi API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://skill-tree-learning-gamma.vercel.app","http://localhost:5173/"], # Link vercel sau khi deploy xong
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

@@ -14,15 +14,26 @@ else:
 api_key = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=api_key)
 
-list_models = genai.list_models()
+list_models = [
+    "models/gemini-2.5-flash",
+    "models/gemini-2.5-pro",
+    "models/gemini-2.0-flash",
+    "models/gemini-2.0-flash-001",
+    "models/gemini-2.0-flash-lite-001",
+    "models/gemini-2.0-flash-lite",
+    "models/gemini-flash-latest",
+    "models/gemini-flash-lite-latest",
+    "models/gemini-pro-latest",
+    "models/gemini-2.5-flash-lite",
+    "models/gemini-2.5-flash-image",
+    "models/gemini-3.1-flash-lite",
+    "models/gemini-2.5-flash-native-audio-latest"
+]
 
 def generate_skill_tree(subject: str):
-    for model in list_models:
-        model_name = model.name
-        if "flash" not in model_name and "pro" not in model_name and "gemini" not in model_name:
-            continue
+    for model_name in list_models:
         try:
-            print(f"Đang thử AI với model: {model_name}...")
+            print(f"Trying AI with model: {model_name}...")
             model = genai.GenerativeModel(model_name)
             
             prompt = f"""
@@ -80,11 +91,11 @@ def generate_skill_tree(subject: str):
             elif "```" in text:
                 text = text.split("```")[1].split("```")[0].strip()
 
-            print(f"--- THÀNH CÔNG VỚI MODEL: {model_name} ---")
+            print(f"--- SUCCESS WITH MODEL: {model_name} ---")
             return json.loads(text)
 
         except Exception as e:
-            print(f"Lỗi với {model_name}")
+            print(f"Error with {model_name}: {e}")
             continue
 
     # Fallback cuối cùng
